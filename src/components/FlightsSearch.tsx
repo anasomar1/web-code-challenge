@@ -22,52 +22,50 @@ const FlightsSearch: React.FC<SearchFormProps> = ({ onSearch }) => {
   const [cityCode, setCityCode] = useState("");
   const [date, setDate] = useState<Dayjs | null>(dayjs());
   const [cityCodeError, setCityCodeError] = useState("");
+  const [searchError, setSearchError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCityCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
     setCityCode(value);
-
     if (cityCodeError) {
       setCityCodeError("");
     }
   };
 
   const handleSearch = async (cityCode: string, date: string) => {
-    const response = await fetchFlightInspirations(cityCode, date);
-    const mappedFlightOffers: TableData[] = response.data.map(
-      (flightOffer, index) => ({
-        id: index.toString(),
-        departureDate: flightOffer.departureDate,
-        destination: flightOffer.destination,
-        origin: flightOffer.origin,
-        price: `${flightOffer.price.total}${flightOffer.price.currency ?? ""}`,
-        returnDate: flightOffer.returnDate,
-        type: flightOffer.type,
-      })
-    );
-    onSearch(mappedFlightOffers);
-  };
-
-  const validateForm = (): boolean => {
-    const iataPattern = /^[A-Z]{3}$/;
-
-    if (!iataPattern.test(cityCode)) {
-      setCityCodeError("City code must be 3 uppercase letters");
-      return false;
+    setIsLoading(true);
+    setSearchError("");
+    try {
+      const response = await fetchFlightInspirations(cityCode, date);
+      const mappedFlightOffers: TableData[] = response.data.map(
+        (flightOffer, index) => ({
+          id: index.toString(),
+          departureDate: flightOffer.departureDate,
+          destination: flightOffer.destination,
+          origin: flightOffer.origin,
+          price: `${flightOffer.price.total}${
+            flightOffer.price.currency ?? ""
+          }`,
+          returnDate: flightOffer.returnDate,
+          type: flightOffer.type,
+        })
+      );
+      onSearch(mappedFlightOffers);
+    } catch (error) {
+      setSearchError("Something went wrong, please try again later.");
+    } finally {
+      setIsLoading(false);
     }
-
-    return true;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (validateForm()) {
-      handleSearch(
-        cityCode,
-        date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")
-      );
-    }
+    const dateFormat = "YYYY-MM-DD";
+    handleSearch(
+      cityCode,
+      date ? date.format(dateFormat) : dayjs().format(dateFormat)
+    );
   };
 
   return (
@@ -103,8 +101,11 @@ const FlightsSearch: React.FC<SearchFormProps> = ({ onSearch }) => {
           />
         </InputGroup>
 
-        <SearchButton type="submit">Search Flights</SearchButton>
+        <SearchButton type="submit" disabled={isLoading}>
+          {isLoading ? "Searching..." : "Search Flights"}
+        </SearchButton>
       </FormContainer>
+      {searchError && <ErrorText>{searchError}</ErrorText>}
     </FormCard>
   );
 };
