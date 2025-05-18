@@ -1,6 +1,7 @@
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useTableData } from "../hooks/useTableData";
+import { useColumnOrder } from "../hooks/useColumnOrder";
 import { TableData } from "../types/tableTypes";
 import { DateCell } from "./DateCell";
 import {
@@ -13,6 +14,8 @@ import {
   TableInput,
 } from "./StyledComponents";
 import FlightsSearch from "./FlightsSearch";
+import { useEffect } from "react";
+import isEqual from "lodash/isEqual";
 
 const FlightsTable = () => {
   const {
@@ -23,7 +26,19 @@ const FlightsTable = () => {
     debouncedFilter,
     setTableData,
   } = useTableData();
-  const columns = Object.keys(data[0] || {});
+
+  const initialColumns = data.length > 0 ? Object.keys(data[0]) : [];
+  const { columns, setColumns, dragHandlers } = useColumnOrder(initialColumns);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      const dataColumns = Object.keys(data[0]);
+      if (!isEqual(columns, dataColumns) && columns.length === 0) {
+        setColumns(dataColumns);
+      }
+    }
+  }, [data, setColumns, columns]);
+
   const dateCells = ["departureDate", "returnDate"];
 
   const onSearch = (data: TableData[]) => {
@@ -42,8 +57,17 @@ const FlightsTable = () => {
         <StyledTable>
           <thead>
             <tr>
-              {columns.map((column) => (
-                <TableHeader key={column}>
+              {columns.map((column, index) => (
+                <TableHeader
+                  key={column}
+                  draggable={true}
+                  onDragStart={(e) => dragHandlers.handleDragStart(e, index)}
+                  onDragOver={dragHandlers.handleDragOver}
+                  onDragLeave={dragHandlers.handleDragLeave}
+                  onDrop={(e) => dragHandlers.handleDrop(e, index)}
+                  onDragEnd={dragHandlers.handleDragEnd}
+                  style={{ cursor: "move" }}
+                >
                   {column}
                   <SearchInput
                     placeholder={`Search ${column}...`}
