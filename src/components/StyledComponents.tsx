@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 
 export const TableContainer = styled.div`
   padding: 20px;
@@ -26,7 +26,7 @@ export const TableHeader = styled.th`
 export const TableCell = styled.td<{ isEdited?: boolean }>`
   padding: 12px;
   border-bottom: 1px solid #ddd;
-  background: ${({ isEdited }) => (isEdited ? '#fff9c4' : 'inherit')};
+  background: ${({ isEdited }) => (isEdited ? "#fff9c4" : "inherit")};
 `;
 
 export const SearchInput = styled.input`
@@ -71,6 +71,11 @@ export const FormContainer = styled.form`
   flex-direction: row;
   gap: 16px;
   align-items: flex-end;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 export const InputGroup = styled.div`
@@ -101,4 +106,16 @@ export const SearchButton = styled(SaveButton)`
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+export const TableInput = styled.input`
+  border: none;
+  background: transparent;
+  width: 100%;
+  padding: 2px 4px;
+  font-family: inherit;
+  &:focus {
+    outline: 1px solid #1976d2;
+    border-radius: 2px;
+  }
 `;
