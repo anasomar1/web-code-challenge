@@ -14,8 +14,11 @@ import {
   TableInput,
 } from "./StyledComponents";
 import FlightsSearch from "./FlightsSearch";
-import { useEffect } from "react";
+import Pagination from "./Pagination";
+import { useEffect, useState } from "react";
 import isEqual from "lodash/isEqual";
+
+const PAGE_SIZE = 5;
 
 const FlightsTable = () => {
   const {
@@ -26,6 +29,8 @@ const FlightsTable = () => {
     debouncedFilter,
     setTableData,
   } = useTableData();
+  const dateCells = ["departureDate", "returnDate"];
+  const [currentPage, setCurrentPage] = useState(1);
 
   const initialColumns = data.length > 0 ? Object.keys(data[0]) : [];
   const { columns, setColumns, dragHandlers } = useColumnOrder(initialColumns);
@@ -39,13 +44,20 @@ const FlightsTable = () => {
     }
   }, [data, setColumns, columns]);
 
-  const dateCells = ["departureDate", "returnDate"];
-
   const onSearch = (data: TableData[]) => {
     setTableData(data);
+    setCurrentPage(1);
   };
 
   const showSaveButton = columns.length > 0;
+
+  const indexOfLastItem = currentPage * PAGE_SIZE;
+  const indexOfFirstItem = indexOfLastItem - PAGE_SIZE;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -78,25 +90,31 @@ const FlightsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, rowIndex) => (
+            {currentItems.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {columns.map((column) => (
                   <TableCell
                     key={`${rowIndex}-${column}`}
-                    isEdited={editedCells.has(`${rowIndex}-${column}`)}
+                    isEdited={editedCells.has(
+                      `${indexOfFirstItem + rowIndex}-${column}`
+                    )}
                   >
                     {dateCells.includes(column) ? (
                       <DateCell
                         value={row[column as keyof TableData]}
                         onChange={(value) =>
-                          updateCell(rowIndex, column, value)
+                          updateCell(indexOfFirstItem + rowIndex, column, value)
                         }
                       />
                     ) : (
                       <TableInput
                         value={row[column as keyof TableData]}
                         onChange={(e) =>
-                          updateCell(rowIndex, column, e.target.value)
+                          updateCell(
+                            indexOfFirstItem + rowIndex,
+                            column,
+                            e.target.value
+                          )
                         }
                       />
                     )}
@@ -106,6 +124,12 @@ const FlightsTable = () => {
             ))}
           </tbody>
         </StyledTable>
+        <Pagination
+          totalItems={data.length}
+          itemsPerPage={PAGE_SIZE}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
       </TableContainer>
     </LocalizationProvider>
   );

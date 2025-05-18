@@ -119,3 +119,27 @@ export const TableInput = styled.input`
     border-radius: 2px;
   }
 `;
+
+export const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  gap: 8px;
+`;
+
+export const PageButton = styled.button<{ isActive?: boolean }>`
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: ${(props) => (props.isActive ? "#4a90e2" : "#ffffff")};
+  color: ${(props) => (props.isActive ? "#ffffff" : "#333333")};
+  cursor: pointer;
+  border-radius: 4px;
+  &:hover {
+    background-color: ${(props) => (props.isActive ? "#4a90e2" : "#f5f5f5")};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
