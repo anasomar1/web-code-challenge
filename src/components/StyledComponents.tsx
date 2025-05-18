@@ -49,3 +49,56 @@ export const SaveButton = styled.button`
     background: #1565c0;
   }
 `;
+
+export const FormCard = styled.div`
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+`;
+
+export const FormTitle = styled.h2`
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+`;
+
+export const FormContainer = styled.form`
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: flex-end;
+`;
+
+export const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`;
+
+export const InputLabel = styled.label`
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #666;
+`;
+
+export const CityCodeInput = styled(SearchInput)`
+  min-width: 120px;
+`;
+
+export const ErrorText = styled.span`
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+`;
+
+export const SearchButton = styled(SaveButton)`
+  margin: 0;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;

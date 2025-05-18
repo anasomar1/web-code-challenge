@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { TableData } from '../types/tableTypes';
-import data from '../data.json';
 import debounce from 'lodash/debounce';
 
 export const useTableData = () => {
@@ -12,8 +11,6 @@ export const useTableData = () => {
     const savedData = localStorage.getItem('tableData');
     if (savedData) {
       setTableData(JSON.parse(savedData));
-    } else {
-      setTableData(data as TableData[]);
     }
   }, []);
 
@@ -59,5 +56,6 @@ export const useTableData = () => {
     updateCell,
     saveChanges,
     debouncedFilter,
+    setTableData,
   };
 };
